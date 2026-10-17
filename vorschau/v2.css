@@ -846,6 +846,21 @@ h1, h2, h3 { font-weight: 800; letter-spacing: -0.015em; line-height: 1.1; }
 .reveal.revealed { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
 
+/* Handy-Menü: unter der Kopfzeile, scrollbar, Leistungen gruppiert in zwei Spalten, Aktionen unten fest */
+.mobile-menu { align-items: stretch; justify-content: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: calc(var(--header-h) + 6px) 18px calc(96px + env(safe-area-inset-bottom)); }
+.mobile-nav { display: block; width: 100%; max-width: 560px; margin: 0 auto; }
+.mobile-gruppe { margin: 0 0 18px; }
+.mobile-gruppe-titel { margin: 0 0 8px 2px; font-size: .74rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--orange); }
+.mobile-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.mobile-nav .mobile-links a { display: flex; align-items: center; min-height: 50px; padding: 10px 14px; background: var(--bg-3); border: 1px solid rgba(29, 32, 38, .08); border-radius: 14px; font-size: 1rem; font-weight: 700; line-height: 1.2; color: var(--ink); overflow-wrap: anywhere; hyphens: auto; }
+.mobile-nav .mobile-links a[aria-current="page"] { border-color: var(--orange); color: var(--orange); }
+.mobile-aktion { position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 10px; padding: 14px 18px calc(14px + env(safe-area-inset-bottom)); background: linear-gradient(to top, var(--bg) 72%, rgba(247, 244, 239, 0)); }
+.mobile-aktion a { flex: 1; white-space: nowrap; display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 999px; font-weight: 800; font-size: 1.05rem; text-decoration: none; }
+.mobile-nav .mobile-cta { flex: 1.5; background: var(--orange); color: #1C1207; padding: 0 16px; }
+.mobile-nav .mobile-tel { background: var(--ink); color: #fff; }
+@media (max-width: 380px) { .mobile-nav .mobile-links a { font-size: .92rem; padding: 10px 12px; } .mobile-aktion a { font-size: .98rem; } }
+@media (max-width: 300px) { .mobile-links { grid-template-columns: 1fr; } }
+
 /* Promo-Video auf der Startseite */
 .film-box{border-radius:28px;overflow:hidden;background:#1D2026;aspect-ratio:16/9;box-shadow:0 30px 80px rgba(29,32,38,.18)}
 .film-box video{display:block;width:100%;height:100%;object-fit:cover}
