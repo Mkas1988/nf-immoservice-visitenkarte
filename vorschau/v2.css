@@ -847,10 +847,8 @@ h1, h2, h3 { font-weight: 800; letter-spacing: -0.015em; line-height: 1.1; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
 
 /* ---------- NF-Ergänzungen (build_site.py) ---------- */
-.related-grid--4 { grid-template-columns: repeat(4, 1fr); }
-@media (max-width: 1024px) { .related-grid--4 { grid-template-columns: repeat(2, 1fr); } }
+#leistungen + .section, .section + .section { }
 @media (max-width: 600px) {
-    .related-grid--4 { grid-template-columns: 1fr; }
     .tile, .tile-wide { aspect-ratio: auto; min-height: 330px; }
     .tile::after { background: linear-gradient(185deg, rgba(18,20,24,0.1) 5%, rgba(18,20,24,0.94) 62%); }
     .tile-body { padding: 22px 20px; }
