@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nf-immoservice.de/sitemap.xml
