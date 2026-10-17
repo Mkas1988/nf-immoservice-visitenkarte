@@ -846,8 +846,39 @@ h1, h2, h3 { font-weight: 800; letter-spacing: -0.015em; line-height: 1.1; }
 .reveal.revealed { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
 
-/* ---------- NF-Ergänzungen (build_site.py) ---------- */
-#leistungen + .section, .section + .section { }
+/* ---------- NF-Ergänzungen (build_site.py): helles Design (Wunsch Oppa 17.10.) ---------- */
+:root {
+    --bg: #F7F4EF;
+    --bg-2: #EFEAE2;
+    --bg-3: #FFFFFF;
+    --ink: #1D2026;
+    --ink-dim: rgba(29, 32, 38, 0.70);
+    --line: rgba(29, 32, 38, 0.12);
+    --orange: #EE6A20;
+}
+/* Bereiche über Fotos behalten helle Schrift */
+.hero, .tile, .strip:has(> img), .header:not(.scrolled) {
+    --ink: #F4F1EB;
+    --ink-dim: rgba(244, 241, 235, 0.80);
+    --line: rgba(244, 241, 235, 0.18);
+    color: var(--ink);
+}
+body:has(.mobile-menu.active) .header { --ink: #1D2026; --ink-dim: rgba(29, 32, 38, 0.70); }
+.hero-bg::after {
+    background:
+        linear-gradient(180deg, rgba(18,20,24,0.45) 0%, rgba(18,20,24,0.25) 40%, rgba(18,20,24,0.72) 100%),
+        linear-gradient(100deg, rgba(18,20,24,0.80) 0%, rgba(18,20,24,0.15) 68%);
+}
+.header.scrolled { background: rgba(247, 244, 239, 0.92); }
+.header.scrolled .brand svg polygon:first-child, .footer .brand svg polygon:first-child, .mobile-menu.active ~ * .brand svg polygon:first-child { fill: #1D2026; }
+.marquee-item { -webkit-text-stroke: 1.5px rgba(29, 32, 38, 0.30); }
+.tile img { filter: saturate(1.02) brightness(1.02); }
+.tile::after { background: linear-gradient(185deg, rgba(18,20,24,0) 38%, rgba(18,20,24,0.80) 96%); }
+.strip { box-shadow: 0 1px 0 var(--line), 0 18px 40px -28px rgba(29, 32, 38, 0.35); }
+.strip:has(> img) img { filter: brightness(0.45) saturate(0.95); }
+.btn-line { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ink) 35%, transparent); color: var(--ink); }
+.breadcrumb li + li::before { color: var(--ink-dim); }
+.related-card, .gallery-item, .faq-item, .contact-form { box-shadow: 0 12px 30px -24px rgba(29, 32, 38, 0.35); }
 @media (max-width: 600px) {
     .tile, .tile-wide { aspect-ratio: auto; min-height: 330px; }
     .tile::after { background: linear-gradient(185deg, rgba(18,20,24,0.1) 5%, rgba(18,20,24,0.94) 62%); }
