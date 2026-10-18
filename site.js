@@ -174,3 +174,108 @@ const NF_CONFIG = {
     const year = document.getElementById('year');
     if (year) year.textContent = new Date().getFullYear();
 })();
+
+/* ---------- NF: Einwilligung (Cookie-Banner) + Google Analytics 4 ----------
+   Consent Mode v2, Basis-Modus: Ohne Einwilligung wird Google gar nicht geladen.
+   Entscheidung liegt im localStorage („nf_einwilligung“), änderbar über „Cookie-Einstellungen“ im Footer.
+   Gemessen werden zusätzlich Kontakt-Klicks (Anruf, WhatsApp, E-Mail, Formular) als generate_lead. */
+(function () {
+    var GA_ID = 'G-BZRV4HEKRN', KEY = 'nf_einwilligung', VERSION = 1;
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { window.dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+
+    var geladen = false;
+    function ladeGA() {
+        if (geladen) return;
+        geladen = true;
+        gtag('consent', 'update', { analytics_storage: 'granted' });
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        document.head.appendChild(s);
+        gtag('js', new Date());
+        gtag('config', GA_ID);
+    }
+    function lies() {
+        try { var v = JSON.parse(localStorage.getItem(KEY) || 'null'); return v && v.v === VERSION ? v : null; } catch (e) { return null; }
+    }
+    function speichere(statistik) {
+        try { localStorage.setItem(KEY, JSON.stringify({ v: VERSION, statistik: statistik, zeit: new Date().toISOString() })); } catch (e) { /* privater Modus */ }
+    }
+    function loescheGACookies() {
+        document.cookie.split(';').forEach(function (c) {
+            var n = c.split('=')[0].trim();
+            if (/^_ga/.test(n)) {
+                ['', '; domain=.' + location.hostname, '; domain=' + location.hostname].forEach(function (d) {
+                    document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + d;
+                });
+            }
+        });
+    }
+
+    var banner = null;
+    function zeigeBanner() {
+        if (banner) { banner.hidden = false; return; }
+        banner = document.createElement('div');
+        banner.className = 'nf-einwilligung';
+        banner.setAttribute('role', 'dialog');
+        banner.setAttribute('aria-label', 'Datenschutz-Einstellungen');
+        banner.innerHTML =
+            '<p><strong>Ihre Privatsphäre ist uns wichtig.</strong> Mit Ihrer Einwilligung messen wir mit Google Analytics, wie unsere Website genutzt wird, um sie zu verbessern. ' +
+            'Ohne Einwilligung werden keine Statistik-Cookies gesetzt. Ihre Entscheidung können Sie jederzeit unter „Cookie-Einstellungen“ ändern. ' +
+            '<a href="/datenschutz.html#statistik">Mehr erfahren</a></p>' +
+            '<div class="nf-einwilligung-knoepfe">' +
+            '<button type="button" data-nf-einwilligung="nein">Ablehnen</button>' +
+            '<button type="button" data-nf-einwilligung="ja">Akzeptieren</button>' +
+            '</div>';
+        document.body.appendChild(banner);
+        banner.addEventListener('click', function (e) {
+            var b = e.target.closest('[data-nf-einwilligung]');
+            if (!b) return;
+            var ja = b.getAttribute('data-nf-einwilligung') === 'ja';
+            speichere(ja);
+            banner.hidden = true;
+            if (ja) { ladeGA(); }
+            else if (geladen) { gtag('consent', 'update', { analytics_storage: 'denied' }); loescheGACookies(); location.reload(); }
+            else { loescheGACookies(); }
+        });
+    }
+
+    function start() {
+        var e = lies();
+        if (e && e.statistik) ladeGA();
+        if (!e) zeigeBanner();
+        document.addEventListener('click', function (ev) {
+            if (ev.target.closest('[data-nf-einwilligung-oeffnen]')) { ev.preventDefault(); zeigeBanner(); }
+        });
+    }
+
+    /* Messung der wichtigen Klicks – nur wenn eingewilligt (sonst ist gtag nicht geladen) */
+    function ereignis(name, werte) { if (geladen) gtag('event', name, werte || {}); }
+    function bereich(el) {
+        var s = el.closest('section[id], header, footer, .mobile-menu');
+        if (!s) return 'seite';
+        if (s.id) return s.id;
+        if (s.classList.contains('mobile-menu')) return 'menue-mobil';
+        return s.tagName.toLowerCase();
+    }
+    document.addEventListener('click', function (ev) {
+        var a = ev.target.closest('a');
+        if (!a) return;
+        var h = a.getAttribute('href') || '';
+        if (h.indexOf('tel:') === 0) ereignis('generate_lead', { methode: 'anruf', bereich: bereich(a) });
+        else if (/wa\.me|whatsapp/i.test(h)) ereignis('generate_lead', { methode: 'whatsapp', bereich: bereich(a) });
+        else if (h.indexOf('mailto:') === 0) ereignis('generate_lead', { methode: 'email', bereich: bereich(a) });
+        else if (/#kontakt$/.test(h)) ereignis('kontakt_klick', { bereich: bereich(a), text: (a.innerText || '').trim().slice(0, 40) });
+    }, true);
+    document.addEventListener('submit', function (ev) {
+        if (ev.target && ev.target.matches('form')) ereignis('generate_lead', { methode: 'formular', bereich: bereich(ev.target) });
+    }, true);
+    document.querySelectorAll('video').forEach(function (v) {
+        v.addEventListener('play', function () { ereignis('video_start', { video: v.getAttribute('aria-label') || 'video' }); }, { once: true });
+    });
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
